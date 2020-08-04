@@ -38,10 +38,9 @@ from slugify import slugify
 import magic
 import zipfile
 import tarfile
-import importlib
 
 # http://stackoverflow.com/questions/21129020/how-to-fix-unicodedecodeerror-ascii-codec-cant-decode-byte
-importlib.reload(sys)
+reload(sys)
 sys.setdefaultencoding('utf8')
 
 # Functions ###########################################################################
@@ -60,7 +59,7 @@ def locate(pattern, root=os.curdir):
 def createOutputDirectories(destinationRoot):
     # create output subdirectories
     if os.path.exists(destinationRoot):
-        print("\n$$$$ Directory " + sourceDir + " (" + destinationRoot + ") already exists! Overwriting existing files\n")
+        print "\n$$$$ Directory " + sourceDir + " (" + destinationRoot + ") already exists! Overwriting existing files\n"
     else:
         os.mkdir(destinationRoot)
 
@@ -82,9 +81,9 @@ def initializeLogfile(logfileName):
         logfile.write(" Sections: " + topics + "\n")
         logfile.write("Extract started: " + timeStamp + "\n")
         logfile.write("------------------------\n")
-        print(("Extract Log File: {0}".format(logFileSpec)))
+        print ("Extract Log File: {0}".format(logFileSpec))
     else:
-        print(("Error: unable to open {0} for writing".format(logFileSpec)))
+        print ("Error: unable to open {0} for writing".format(logFileSpec))
 
 # Unique filename
 # From http://code.activestate.com/recipes/577200-make-unique-file-name/
@@ -98,7 +97,7 @@ def add_unique_postfix(fn):
 
     make_fn = lambda i: os.path.join(path, '%s(%d)%s' % (name, i, ext))
 
-    for i in range(2, sys.maxsize):
+    for i in xrange(2, sys.maxint):
         uni_fn = make_fn(i)
         if not os.path.exists(uni_fn):
             return uni_fn
@@ -110,7 +109,7 @@ def add_unique_postfix(fn):
 def make_slugified_filename(filename):
 	path, name = os.path.split(filename)
 	name, ext = os.path.splitext(filename)
-	return os.path.join(path, "%s%s" % (slugify(str(name)), ext))
+	return os.path.join(path, "%s%s" % (slugify(unicode(name)), ext))
 
 # Unzip the mbz file and extract the contents
 def unzip_mbz_file(mbz_filepath):
@@ -144,7 +143,7 @@ def unzip_mbz_file(mbz_filepath):
 		tar.close()
 		
 	else:
-		print("Can't figure out what type of archive file this is")
+		print "Can't figure out what type of archive file this is"
 		return -1
 	
 	return fullpath_to_unzip_dir
@@ -157,7 +156,7 @@ def unzip_mbz_file(mbz_filepath):
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-print("\n##################\nextract-mbz.py\nextract moodle content from mbz backup (python v2.7)\n")
+print "\n##################\nextract-mbz.py\nextract moodle content from mbz backup (python v2.7)\n"
 pipe = "|"
 nl = "\n"
 nArgs = len(sys.argv)
@@ -167,30 +166,30 @@ conflicted = 0
 #print 'Argument List:', str(sys.argv)
 
 if nArgs < 2:
-    print("usage: extract <path to Moodle backup mbz file> \n")
+    print "usage: extract <path to Moodle backup mbz file> \n"
     sys.exit()
 
 if sys.argv[1] == '?':
-    print("help:")
-    print("\tusage: extract <path to Moodle backup mbz file>")
-    print("\n\tcurrent objects extracted: Files, URLs")
-    print("\tcurrent file types extracted: pdf|png|gif|zip|rtf|sav|mp3|mht|por|xlsx?|docx?|pptx?\n")
+    print "help:"
+    print "\tusage: extract <path to Moodle backup mbz file>"
+    print "\n\tcurrent objects extracted: Files, URLs"
+    print "\tcurrent file types extracted: pdf|png|gif|zip|rtf|sav|mp3|mht|por|xlsx?|docx?|pptx?\n"
     sys.exit()
 
 mbz_filepath = str(sys.argv[1])
 
 if not os.path.exists(mbz_filepath):
-    print("\nERROR: " + mbz_filepath + " does not appear to exist\n")
+    print "\nERROR: " + mbz_filepath + " does not appear to exist\n"
     sys.exit()
 
 source = unzip_mbz_file(mbz_filepath)
 
 if not os.path.exists(os.path.join(source, 'course', 'course.xml')):
-    print("\nERROR: " + source + " does not appear to contain unzipped mbz contents (couldn't locate course.xml)\n")
+    print "\nERROR: " + source + " does not appear to contain unzipped mbz contents (couldn't locate course.xml)\n"
     sys.exit()
 
 if not os.path.exists(os.path.join(source,  'moodle_backup.xml')):
-    print("\nERROR: " + source + " does not appear to contain unzipped mbz contents (couldn't locate moodle_backup.xml)\n")
+    print "\nERROR: " + source + " does not appear to contain unzipped mbz contents (couldn't locate moodle_backup.xml)\n"
     sys.exit()
 
 
@@ -208,7 +207,7 @@ format = courseTree.getroot().find('format').text
 topics = courseTree.getroot().find('numsections').text
 
 
-destinationRoot      = os.path.join(str(source), slugify(str(shortname)))
+destinationRoot      = os.path.join(unicode(source), slugify(unicode(shortname)))
 createOutputDirectories(destinationRoot)
 
 # Copy HTML support files to extracted folder
@@ -225,7 +224,7 @@ ts = time.time()
 timeStamp = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d-%H%M')
 timeStampSeconds = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d-%H%M-%S')
 
-print("Extracting backup of "+shortname+ " @ " + timeStamp + " to " + destinationRoot +"\n")
+print "Extracting backup of "+shortname+ " @ " + timeStamp + " to " + destinationRoot +"\n"
 
 initializeLogfile("extract_log.txt")
 
@@ -244,7 +243,7 @@ html_header = '''
 
 ##########################
 # Process each section
-webFilename = "%s.html" % slugify(str(shortname))
+webFilename = "%s.html" % slugify(unicode(shortname))
 webFileSpec = os.path.join(destinationRoot, webFilename)
 
 
@@ -254,18 +253,18 @@ if urlfile.mode == 'w':
     urlfile.write("<h3>Moodle Backup Extract..."+timeStamp+"</h3>")
     urlfile.write("<h2 class='man'>%s</h2><h4 class='man'>%s</h4>" % (fullname, shortname))
     logfile.write("\n============\nCourse Sections\n=============\n")
-    print(("Course Sections: {0}".format(webFileSpec)))
+    print ("Course Sections: {0}".format(webFileSpec))
 else:
-    print(("Error: unable to open {0} for writing".format(webFileSpec)))
+    print ("Error: unable to open {0} for writing".format(webFileSpec))
 
-print("===\nProcessing course sections...")
+print "===\nProcessing course sections..."
 
 itemCount = 0
 
 for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("section"):
 
 	section_title = s.find("title").text
-	print("\nNow processing section id: %s (%s)" % (s.find("sectionid").text, section_title))
+	print "\nNow processing section id: %s (%s)" % (s.find("sectionid").text, section_title)
 
 	# If the section title is just a number that is the same value as the item count, prepend a string
 	if section_title == str(itemCount):
@@ -308,7 +307,7 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
 			continue
 	
 
-		print("Found %s (item #: %s) titled %s" % (modulename, item, item_title))
+		print "Found %s (item #: %s) titled %s" % (modulename, item, item_title)
 
 		if modulename == "resource":
 			# Get link to file
@@ -326,7 +325,7 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
 					# Copy the file to a folder for this section
 					if not os.path.exists(section_file_dir):
 						os.makedirs(section_file_dir)
-					filename = make_slugified_filename(str(filename))
+					filename = make_slugified_filename(unicode(filename))
 					contenthash = files.find("file[@id='%s']/contenthash" % file_id).text
 
 					destination = add_unique_postfix(os.path.join(section_file_dir, filename))
@@ -345,7 +344,7 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
 			# Get url link
 			urlTree = etree.parse(os.path.join(source, 'activities', 'url_%s' % item,  'url.xml'))
 			url = urlTree.find("url/externalurl").text
-			print("Url id %s" % url)
+			print "Url id %s" % url
 
 			item_title = "<a href='%s' target='_blank'>%s</a>" % (url, item_title)
 
@@ -365,7 +364,7 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
 			# with filepaths
 			page_title = page_title.replace("/","-");
 
-			pageFilename = make_slugified_filename("%s.html" % str(page_title))
+			pageFilename = make_slugified_filename("%s.html" % unicode(page_title))
 			pageFilePath = os.path.join(section_file_dir, pageFilename)
 			pageFilePath = add_unique_postfix(pageFilePath)
 
@@ -458,7 +457,7 @@ root = fileTree.getroot()
 #print "Root: ", root
 
 itemCount = 0
-print("\nProcessing Course Files...");  # status
+print "\nProcessing Course Files...";  # status
 logfile.write("\n============\nCourse Files\n=============\n")
 
 for rsrc in root:
@@ -499,7 +498,7 @@ for rsrc in root:
         for x in files:
             # print "Copying: ", x
             if os.path.exists(os.path.join(destination,fname)):
-                print(" $$$$ File conflict!!!!! " + destination + fname)
+                print " $$$$ File conflict!!!!! " + destination + fname
                 conflicted += 1
                 shutil.copyfile(x, os.path.join(destination, fname + "-" + str(conflicted)))
             else:
@@ -509,7 +508,7 @@ for rsrc in root:
 
 # print "No Match: '", fname, "'"
 
-print(("Extracted files = {0}".format(itemCount)))
+print ("Extracted files = {0}".format(itemCount))
 logfile.write ("\nExtracted files = {0}\n".format(itemCount))
 
 
@@ -521,11 +520,11 @@ logfile.close()
 symLink = shortname.lower()+"-"+timeStampSeconds
 
 if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-    print("Creative symlink for *nix systems...")
+    print "Creative symlink for *nix systems..."
     if os.path.exists(symLink):
-        print("symlink " + symLink + " already exists! CHECK!\n")
+        print "symlink " + symLink + " already exists! CHECK!\n"
     else:
-        print("Creating symlink " + symLink + " -> " + destinationRoot)
+        print "Creating symlink " + symLink + " -> " + destinationRoot
         os.symlink(destinationRoot, symLink)
 
 # clean up (remove) subdirectories not used
