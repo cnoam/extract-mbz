@@ -373,12 +373,12 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
                         if pagefile.mode == 'w':
                                 pagefile.write("<html>%s<body><blockquote>" % html_header)
                                 pagefile.write("<h2>%s (%s)</h2>" % (fullname, shortname))
-                                pagefile.write("<h1>%s</h1>" % page_title.encode("utf-8", errors='ignore'))
+                                pagefile.write("<h1>%s</h1>" % page_title.encode("utf-8"))
                                 pagefile.close()
 
                         pagefile = open(pageFilePath,"ab")
                         if pagefile.mode == 'ab':
-                                pagefile.write(page_content.encode("utf-8", errors='ignore'))
+                                pagefile.write(page_content.encode("utf-8"))
                                 pagefile.close()
 
                         page_url = "./section_%03d/%s" % (itemCount, pageFilename)
