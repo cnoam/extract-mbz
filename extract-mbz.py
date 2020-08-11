@@ -27,7 +27,7 @@
 ###########################################################################
 
 import xml.etree.ElementTree as etree
-import fnmatch2
+import fnmatch
 import shutil
 import os
 import re
@@ -53,7 +53,7 @@ def locate(pattern, root=os.curdir):
 
 
     for path, dirs, files in os.walk(os.path.abspath(root)):
-        for filename in fnmatch2.filter(files, pattern):
+        for filename in fnmatch.filter(files, pattern):
             yield os.path.join(path, filename)
 
 # createOutputDirectories # # # #
@@ -154,8 +154,6 @@ def unzip_mbz_file(mbz_filepath):
 
 
 # /Functions ###########################################################################
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 print("\n##################\nextract-mbz.py\nextract moodle content from mbz backup (python v3.8.5)\n")
 pipe = "|"
@@ -283,7 +281,7 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
         section_summary = section_file_root.find("summary").text
         if section_summary:
                 section_summary = section_summary.replace("@@PLUGINFILE@@", "./course")
-                HTMLOutput += "<p>%s</p>" % section_summary.encode("utf-8", errors='ignore')
+                HTMLOutput += "<p>%s</p>" % section_summary.encode("utf-8")
         HTMLOutput += "<ul class='man'>"
 
 
@@ -363,7 +361,7 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
 
                         # Replace any "/" characters with "-" characters to avoid confusion
                         # with filepaths
-                        page_title = page_title.replace("/","-");
+                        page_title = page_title.replace("/","-")
 
                         pageFilename = make_slugified_filename("%s.html" % str(page_title))
                         pageFilePath = os.path.join(section_file_dir, pageFilename)
@@ -430,12 +428,12 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
 
 
                 #item_path = activities.find(item_xpath).find("directory").text
-                HTMLOutput += "<li>%s</li>" % item_title.encode("utf-8", errors='ignore')
+                HTMLOutput += "<li>%s</li>" % item_title.encode("utf-8")
 
 
         logOutput = section_title + nl
         HTMLOutput += "</ul>"
-        HTMLOutput = HTMLOutput.encode('utf-8', errors='ignore')
+        HTMLOutput = HTMLOutput.encode('utf-8')
 
         urlfile.close()
         urlfile = open(webFileSpec,"ab")
@@ -447,7 +445,7 @@ if itemCount == 0:
     urlfile.write("<p>No sections found!</p>")
     print("No sections found!")
 
-logfile.write ("Extracted sections = {0}".format(itemCount))
+logfile.write("Extracted sections = {0}".format(itemCount))
 
 urlfile.close()
 
@@ -474,10 +472,14 @@ for rsrc in root:
 
     print("Hash: '", fhash, "'")
     print("Name: '", fname, "'")
+    print(type(fname))
     print("Component: '", fcontext, "'")
-    fname = fname.encode("utf-8")
+    #print(fname)
+    #fname = fname.encode("utf-8")
+    #print(fname)
     logfile.write ( "{0} -- {1} -- {2}\n".format(fname, fhash, fcontext))
-    hit = pattern.search(fname)
+    print(pattern.match(fname))
+    hit = pattern.match(fname)
 
     if hit:
         itemCount += 1
